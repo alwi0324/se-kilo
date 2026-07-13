@@ -147,12 +147,23 @@
     >
       <!-- TOP HEADER -->
       <header class="mb-6">
-        <h2
-          id="main-title"
-          class="text-2xl font-bold tracking-tight text-slate-950"
-        >
-          Progress Capaian per Kecamatan
-        </h2>
+        <div>
+          <h2
+            id="main-title"
+            class="text-2xl font-bold tracking-tight text-slate-950 dark:text-white"
+          >
+            Progress Capaian per Kecamatan
+          </h2>
+          <br />
+          <!-- Tempat Informasi Update -->
+          <p
+            id="dashboard-update"
+            class="text-xs text-slate-500 dark:text-slate-400 mt-1 flex items-center gap-1.5"
+          >
+            <i class="fa-regular fa-clock text-amber-500"></i>
+            <span>Memuat waktu pembaruan...</span>
+          </p>
+        </div>
       </header>
 
       <!-- KARTU INDIKATOR RINGKASAN (BORDER & SHADOW DIPERTEGAS) -->
@@ -188,7 +199,7 @@
         >
           <span
             class="text-xs font-semibold text-emerald-600 tracking-wider uppercase"
-            >Submit + Approved + Rejected</span
+            >Submit + Approved + Rejected + Revoked</span
           >
           <h3
             id="stat-realisasi"
@@ -262,7 +273,7 @@
           id="wrapper-table"
           class="hidden overflow-x-auto w-full max-h-[500px]"
         >
-          <table class="w-full text-left border-collapse whitespace-nowrap">
+          <table class="w-full text-left border-collapse whitespace-normal">
             <thead>
               <tr
                 class="border-b border-slate-200 dark:border-slate-700 text-slate-400 dark:text-slate-500 text-xs font-semibold uppercase tracking-wider"
@@ -315,6 +326,11 @@
                   class="py-3 px-4 text-right sticky top-0 bg-white dark:bg-slate-800 z-30"
                 >
                   Rejected
+                </th>
+                <th
+                  class="py-3 px-4 text-right sticky top-0 bg-white dark:bg-slate-800 z-30"
+                >
+                  Revoked
                 </th>
               </tr>
             </thead>
