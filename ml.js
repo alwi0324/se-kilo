@@ -8,7 +8,7 @@ let globalPplData = null;
 let globalPmlData = null;
 
 let globalPsgKecProgress = null;
-let selectedPml = "Semua";
+let selectedPml = "";
 let globalPsgPplPml = [];
 
 function updateDashboardData(whatData) {
@@ -93,6 +93,7 @@ function updateDashboardData(whatData) {
       submit: whatData.submit.filter((_, idx) => indeksCocok.includes(idx)),
       approved: whatData.approved.filter((_, idx) => indeksCocok.includes(idx)),
       rejected: whatData.rejected.filter((_, idx) => indeksCocok.includes(idx)),
+      revoked: whatData.revoked.filter((_, idx) => indeksCocok.includes(idx)),
       target: whatData.target.filter((_, idx) => indeksCocok.includes(idx)),
       realisasi: whatData.realisasi.filter((_, idx) =>
         indeksCocok.includes(idx),
@@ -126,13 +127,26 @@ function updateDashboardData(whatData) {
   // Cek keamanan jika data kosong agar tidak crash
   if (!data) return;
 
-  document.getElementById("main-title").innerText = data.title;
-  document.getElementById("th-name").innerText = data.thName;
+  const elMainTitle = document.getElementById("main-title");
+  const elThName = document.getElementById("th-name");
+  const elStatTarget = document.getElementById("stat-target");
+  const elStatBelum = document.getElementById("stat-blm-terdata");
+  const elStatReal = document.getElementById("stat-realisasi");
+  const elStatPersen = document.getElementById("stat-persen");
 
-  document.getElementById("stat-target").innerText = data.stats.target;
-  document.getElementById("stat-blm-terdata").innerText = data.stats.open;
-  document.getElementById("stat-realisasi").innerText = data.stats.realisasi;
-  document.getElementById("stat-persen").innerText = data.stats.persen;
+  if (elMainTitle) elMainTitle.innerText = data.title;
+
+  // BINDING DATA UPDATE SECARA AMAN
+  const elUpdate = document.getElementById("dashboard-update");
+  if (elUpdate && data.lastUpdate) {
+    elUpdate.innerHTML = `<i class="fa-regular fa-clock text-amber-500"></i> <span>${data.lastUpdate}</span>`;
+  }
+  if (elThName) elThName.innerText = data.thName;
+
+  if (elStatTarget) elStatTarget.innerText = data.stats.target;
+  if (elStatBelum) elStatBelum.innerText = data.stats.open;
+  if (elStatReal) elStatReal.innerText = data.stats.realisasi;
+  if (elStatPersen) elStatPersen.innerText = data.stats.persen;
 
   if (currentView === "chart") {
     renderChart(data);
@@ -142,7 +156,7 @@ function updateDashboardData(whatData) {
 }
 
 function renderTable(whatData) {
-  const dataContent = whatData;
+  let dataContent = whatData;
   const tbody = document.getElementById("table-body");
   tbody.innerHTML = "";
   if (!dataContent) {
@@ -160,6 +174,27 @@ function renderTable(whatData) {
     console.warn("Data belum siap untuk dirender ke tabel.");
     return;
   }
+
+  const isPmlMenu = currentMenu === "pml";
+  const theadRow = document.querySelector("#wrapper-table table thead tr");
+
+  if (theadRow) {
+    // Reset atau bangun ulang isi Header secara dinamis berdasarkan menu aktif
+    theadRow.innerHTML = `
+      <th class="py-3 px-4 text-left sticky left-0 bg-slate-50 dark:bg-slate-700 z-10">${dataContent.thName}</th>
+      <th class="py-3 px-4 text-right">Progress</th>
+      ${isPmlMenu ? `<th class="py-3 px-4 text-right text-blue-600 dark:text-blue-400">Terverifikasi</th>` : ""}
+      <th class="py-3 px-4 text-right">Muatan</th>
+      <th class="py-3 px-4 text-right">Terdata</th>
+      <th class="py-3 px-4 text-right">Open</th>
+      <th class="py-3 px-4 text-right">Pending</th>
+      <th class="py-3 px-4 text-right">Draft</th>
+      <th class="py-3 px-4 text-right">Approved</th>
+      <th class="py-3 px-4 text-right">Rejected</th>
+      <th class="py-3 px-4 text-right">Revoked</th>
+    `;
+  }
+
   dataContent.labels.forEach((label, index) => {
     const tgt = dataContent.target[index];
     const real = dataContent.realisasi[index];
@@ -168,12 +203,16 @@ function renderTable(whatData) {
     const submit = dataContent.submit[index];
     const draft = dataContent.draft[index];
     const approved = dataContent.approved[index];
+    const revoked = dataContent.revoked[index];
     const rejected = dataContent.rejected[index];
-
+    const verifPct =
+      isPmlMenu && dataContent.verifikasi
+        ? dataContent.verifikasi[index] || 0
+        : 0;
     const row = document.createElement("tr");
     row.className = "theme-transition border-b border-slate-100";
     row.innerHTML = `
-            <td class="py-4 px-4 font-medium text-slate-950 sticky left-0 bg-white dark:bg-slate-800 z-10">${label}</td>
+            <td class="py-4 px-4 whitespace-normal font-medium text-slate-950 sticky left-0 bg-white dark:bg-slate-800 z-10">${label}</td>
             <td class="py-4 px-4">
                 <div class="flex items-center space-x-3 justify-end">
                     <span class="font-semibold text-xs w-10 text-right text-amber-600 dark:text-amber-400">${percentage.toLocaleString("id-ID")}%</span>
@@ -182,6 +221,22 @@ function renderTable(whatData) {
                     </div>
                 </div>
             </td>
+
+            ${
+              isPmlMenu
+                ? `
+            <td class="py-4 px-4">
+                <div class="flex items-center space-x-3 justify-end">
+                    <span class="font-semibold text-xs w-10 text-right text-blue-600 dark:text-blue-400">${verifPct.toLocaleString("id-ID")}%</span>
+                    <div class="w-24 bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden hidden sm:block">
+                        <!-- Progress bar menggunakan warna biru (bg-blue-500) -->
+                        <div class="bg-blue-500 h-full rounded-full" style="width: ${verifPct}%"></div>
+                    </div>
+                </div>
+            </td>
+            `
+                : ""
+            }
             <td class="py-4 px-4 text-right">${tgt.toLocaleString("id-ID")}</td>
             <td class="py-4 px-4 text-right"><span class="font-semibold text-green-600">${real.toLocaleString("id-ID")}</span></td>
             <td class="py-4 px-4 text-right">${open.toLocaleString("id-ID")}</td>
@@ -189,6 +244,7 @@ function renderTable(whatData) {
             <td class="py-4 px-4 text-right"><span class="font-semibold text-yellow-500">${draft.toLocaleString("id-ID")}</span></td>
             <td class="py-4 px-4 text-right"><span class="font-semibold text-blue-500">${approved.toLocaleString("id-ID")}</span></td>
             <td class="py-4 px-4 text-right"><span class="font-semibold text-red-500">${rejected.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-4 text-right"><span class="font-semibold text-purple-500">${revoked.toLocaleString("id-ID")}</span></td>
         `;
     tbody.appendChild(row);
   });
@@ -273,12 +329,12 @@ function renderChart(whatData) {
                     : "0";
 
                 return [
-                  `PML: ${namaPml}`,
                   `Progress: ${pct.toLocaleString("id-ID")}%`,
+                  `PML: ${namaPml}`,
                   `Sudah Didata: ${real}`,
                   `Belum Didata: ${open}`,
-                  `Target: ${tgt}`,
-                  `Tambah Submit: ${tambahSubmitNilai}`, // Gunakan variabel hasil sinkronisasi ini
+                  `Total Muatan: ${tgt}`,
+                  `Tambah Submit: ${tambahSubmitNilai}`,
                 ];
               } else if (currentMenu === "pml") {
                 const verif = dataContent.verifikasi[idx] || 0;
@@ -287,14 +343,14 @@ function renderChart(whatData) {
                   `Terverifikasi: ${verif.toLocaleString("id-ID")}%`,
                   `Sudah Didata: ${real}`,
                   `Belum Didata: ${open}`,
-                  `Target: ${tgt}`,
+                  `Total Muatan: ${tgt}`,
                 ];
               } else {
                 return [
                   `Progress: ${pct.toLocaleString("id-ID")}%`,
                   `Sudah Didata: ${real}`,
                   `Belum Didata: ${open}`,
-                  `Target: ${tgt}`,
+                  `Total Muatan: ${tgt}`,
                 ];
               }
             },
@@ -333,8 +389,11 @@ const dataKecHandler = (data) => {
   const nmKec = data.map((e) => kapitalTiapKata(e.kec.replace("'", "")));
   const blm_didata = data.map((e) => e.open).reduce((a, b) => a + b);
   const targetPerKec = data.map((e) => e.target);
-  const realisasiPerKec = data.map((e) => e.submit + e.approved + e.rejected);
+  const realisasiPerKec = data.map(
+    (e) => e.submit + e.approved + e.rejected + e.revoked,
+  );
   const persenPerKec = data.map((e) => e.progress);
+  const revokedPerKec = data.map((e) => e.revoked || 0); // Default ke 0 jika undefined
 
   const psgKecProgress = Object.fromEntries(
     nmKec.map((nama, indeks) => [nama.toLowerCase(), persenPerKec[indeks]]),
@@ -344,7 +403,8 @@ const dataKecHandler = (data) => {
   const terdata =
     data.map((e) => e.submit).reduce((a, b) => a + b) +
     data.map((e) => e.approved).reduce((a, b) => a + b) +
-    data.map((e) => e.rejected).reduce((a, b) => a + b);
+    data.map((e) => e.rejected).reduce((a, b) => a + b) +
+    data.map((e) => e.revoked).reduce((a, b) => a + b);
 
   const kecData = {
     title: "Progress Capaian per Kecamatan",
@@ -364,9 +424,11 @@ const dataKecHandler = (data) => {
     submit: data.map((e) => e.submit.toLocaleString("id-ID")),
     approved: data.map((e) => e.approved.toLocaleString("id-ID")),
     rejected: data.map((e) => e.rejected.toLocaleString("id-ID")),
+    revoked: data.map((e) => e.revoked.toLocaleString("id-ID")),
     target: targetPerKec,
     realisasi: realisasiPerKec,
     progress: persenPerKec,
+    lastUpdate: data[0].update,
   };
 
   globalKecData = kecData;
@@ -382,7 +444,9 @@ const dataPPLHandler = (data) => {
   const nmPML = [...new Set(data.map((e) => e.pml))];
   const blm_didata = data.map((e) => e.open).reduce((a, b) => a + b);
   const targetPerPPL = data.map((e) => e.target);
-  const realisasiPerPPL = data.map((e) => e.submit + e.approved + e.rejected);
+  const realisasiPerPPL = data.map(
+    (e) => e.submit + e.approved + e.rejected + e.revoked,
+  );
   const persenPerPPL = data.map((e) => e.progress);
   const tambahSubmit = data.map((e) => e.tambah_submit || 0); // Default ke 0 jika undefined
 
@@ -393,18 +457,22 @@ const dataPPLHandler = (data) => {
 
   const dropdown = document.getElementById("filter-pml");
   if (dropdown) {
-    // Reset isi dropdown, tambahkan opsi "Semua" di paling atas
-    dropdown.innerHTML = `<option value="Semua">Semua PML</option>`;
+    // ─── PERBAIKAN: Setel nilai selectedPml ke PML Pertama jika ada ───
+    if (nmPML.length > 0) {
+      selectedPml = nmPML[0];
+    } else {
+      selectedPml = "Semua";
+    }
 
-    // Masukkan nama-nama PML dari array nmPML
-    nmPML.forEach((pml) => {
-      dropdown.innerHTML += `<option value="${pml}">${pml}</option>`;
+    // Masukkan nama-nama PML dan tambahkan atribut 'selected' otomatis pada PML pertama
+    nmPML.forEach((pml, index) => {
+      const isSelected = index === 0 ? "selected" : "";
+      dropdown.innerHTML += `<option value="${pml}" ${isSelected}>${pml}</option>`;
     });
 
     // Event listener saat user mengubah filter dropdown
     dropdown.onchange = (event) => {
       selectedPml = event.target.value;
-      // Picu render ulang dashboard menggunakan data global PPL yang sudah disaring
       updateDashboardData(globalPplData);
     };
   }
@@ -412,7 +480,8 @@ const dataPPLHandler = (data) => {
   const terdata =
     data.map((e) => e.submit).reduce((a, b) => a + b) +
     data.map((e) => e.approved).reduce((a, b) => a + b) +
-    data.map((e) => e.rejected).reduce((a, b) => a + b);
+    data.map((e) => e.rejected).reduce((a, b) => a + b) +
+    data.map((e) => e.revoked).reduce((a, b) => a + b);
 
   const pplData = {
     title: "Progress Capaian per PPL Kecamatan Kilo",
@@ -429,10 +498,12 @@ const dataPPLHandler = (data) => {
     submit: data.map((e) => e.submit.toLocaleString("id-ID")),
     approved: data.map((e) => e.approved.toLocaleString("id-ID")),
     rejected: data.map((e) => e.rejected.toLocaleString("id-ID")),
+    revoked: data.map((e) => e.revoked.toLocaleString("id-ID")),
     target: targetPerPPL,
     realisasi: realisasiPerPPL,
     progress: persenPerPPL,
     tambah_submit: tambahSubmit,
+    lastUpdate: data[0].update,
   };
 
   globalPplData = pplData;
@@ -447,14 +518,17 @@ dataPMLHandler = (data) => {
   const nmPML = [...new Set(data.map((e) => e.pml))];
   const blm_didata = data.map((e) => e.open).reduce((a, b) => a + b);
   const targetPerPML = data.map((e) => e.target);
-  const realisasiPerPML = data.map((e) => e.submit + e.approved + e.rejected);
+  const realisasiPerPML = data.map(
+    (e) => e.submit + e.approved + e.rejected + e.revoked,
+  );
   const persenPerPML = data.map((e) => e.progress);
   const verif = data.map((e) => e.terverifikasi || 0);
 
   const terdata =
     data.map((e) => e.submit).reduce((a, b) => a + b) +
     data.map((e) => e.approved).reduce((a, b) => a + b) +
-    data.map((e) => e.rejected).reduce((a, b) => a + b);
+    data.map((e) => e.rejected).reduce((a, b) => a + b) +
+    data.map((e) => e.revoked).reduce((a, b) => a + b);
 
   const pmlData = {
     title: "Progress Capaian per PML Kecamatan Kilo",
@@ -471,10 +545,12 @@ dataPMLHandler = (data) => {
     submit: data.map((e) => e.submit.toLocaleString("id-ID")),
     approved: data.map((e) => e.approved.toLocaleString("id-ID")),
     rejected: data.map((e) => e.rejected.toLocaleString("id-ID")),
+    revoked: data.map((e) => e.revoked.toLocaleString("id-ID")),
     target: targetPerPML,
     realisasi: realisasiPerPML,
     progress: persenPerPML,
     verifikasi: verif,
+    lastUpdate: data[0].update,
   };
 
   globalPmlData = pmlData;
@@ -608,6 +684,11 @@ function switchMenu(menu) {
   } else if (menu === "ppl") {
     filterContainer.classList.remove("hidden");
     activeData = globalPplData;
+
+    const dropdown = document.getElementById("filter-pml");
+    if (dropdown && selectedPml) {
+      dropdown.value = selectedPml;
+    }
   } else {
     filterContainer.classList.add("hidden");
     if (globalPmlData) {
