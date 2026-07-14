@@ -215,28 +215,28 @@ function renderTable(whatData) {
             <td class="py-4 px-4 whitespace-normal font-medium text-slate-950 sticky left-0 bg-white dark:bg-slate-800 z-10">${label}</td>
             <td class="py-4 px-4">
                 <div class="flex items-center space-x-3 justify-end">
-                    <span class="font-semibold text-xs w-10 text-right text-amber-600 dark:text-amber-400">${percentage.toLocaleString("id-ID")}%</span>
-                    <div class="w-24 bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden hidden sm:block">
-                        <div class="bg-amber-500 h-full rounded-full" style="width: ${percentage}%"></div>
+                    <span class="font-semibold text-xs w-10 text-right text-amber-500 shadow-xs">${percentage.toLocaleString("id-ID")}%</span>
+                    <div class="w-24 bg-slate-800 h-2 rounded-full overflow-visible hidden sm:block">
+                        <!-- Progress Bar dengan Efek Neon Glow Halus -->
+                        <div class="bg-amber-400 h-full rounded-full transition-all duration-500" 
+                             style="width: ${percentage}%; box-shadow: 0 0 8px rgba(245, 158, 11, 0.6), 0 0 2px rgba(245, 158, 11, 0.8);">
+                        </div>
                     </div>
                 </div>
             </td>
-
-            ${
-              isPmlMenu
-                ? `
+            ${isPmlMenu ? `
             <td class="py-4 px-4">
                 <div class="flex items-center space-x-3 justify-end">
-                    <span class="font-semibold text-xs w-10 text-right text-blue-600 dark:text-blue-400">${verifPct.toLocaleString("id-ID")}%</span>
-                    <div class="w-24 bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden hidden sm:block">
-                        <!-- Progress bar menggunakan warna biru (bg-blue-500) -->
-                        <div class="bg-blue-500 h-full rounded-full" style="width: ${verifPct}%"></div>
+                    <span class="font-semibold text-xs w-10 text-right text-cyan-400">${verifPct.toLocaleString("id-ID")}%</span>
+                    <div class="w-24 bg-slate-800 h-2 rounded-full overflow-visible hidden sm:block">
+                        <!-- Progress Bar dengan Efek Neon Glow Halus[cite: 1] -->
+                        <div class="bg-cyan-400 h-full rounded-full transition-all duration-500" 
+                             style="width: ${verifPct}%; box-shadow: 0 0 8px rgba(34, 211, 238, 0.6), 0 0 2px rgba(34, 211, 238, 0.8);">
+                        </div>
                     </div>
                 </div>
             </td>
-            `
-                : ""
-            }
+            ` : ''}
             <td class="py-4 px-4 text-right">${tgt.toLocaleString("id-ID")}</td>
             <td class="py-4 px-4 text-right"><span class="font-semibold text-green-600">${real.toLocaleString("id-ID")}</span></td>
             <td class="py-4 px-4 text-right">${open.toLocaleString("id-ID")}</td>
