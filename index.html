@@ -4,9 +4,12 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Dashboard Capaian Pendataan SE2026</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
@@ -117,6 +120,14 @@
           >
             <i class="fa-solid fa-map-location-dot w-5 text-center"></i>
             <span>Progress Kecamatan</span>
+          </button>
+          <button
+            onclick="switchMenu('sls')"
+            id="menu-sls"
+            class="theme-transition w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-left text-slate-600 hover:bg-slate-100/70 cursor-pointer"
+          >
+            <i class="fa-solid fa-layer-group w-5 text-center"></i>
+            <span>Progress SLS</span>
           </button>
           <button
             onclick="switchMenu('ppl')"
@@ -249,17 +260,33 @@
 
       <div
         id="pml-filter-container"
-        class="hidden mb-4 flex items-center space-x-2"
+        class="hidden mb-4 flex flex-wrap items-center gap-4 bg-white dark:bg-slate-800 p-3 rounded-xl border border-slate-200 dark:border-slate-700"
       >
-        <label
-          for="filter-pml"
-          class="text-sm font-medium text-slate-600 dark:text-slate-400"
-          >Filter PML:</label
-        >
-        <select
-          id="filter-pml"
-          class="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm p-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
-        ></select>
+        <div class="flex items-center space-x-2">
+          <label
+            for="filter-pml"
+            class="text-sm font-medium text-slate-600 dark:text-slate-400"
+            >Filter PML:</label
+          >
+          <select
+            id="filter-pml"
+            onchange="handlePmlFilterChange(this.value)"
+            class="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm p-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          ></select>
+        </div>
+
+        <div id="ppl-filter-wrapper" class="flex items-center space-x-2 hidden">
+          <label
+            for="filter-ppl"
+            class="text-sm font-medium text-slate-600 dark:text-slate-400"
+            >Filter PPL:</label
+          >
+          <select
+            id="filter-ppl"
+            onchange="handlePplFilterChange(this.value)"
+            class="rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-sm p-2 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-orange-500"
+          ></select>
+        </div>
       </div>
 
       <!-- AREA KONTEN UTAMA -->
@@ -341,7 +368,6 @@
               id="table-body"
               class="theme-transition divide-y divide-slate-100 text-sm text-slate-700"
             >
-              <!-- Diisi via JavaScript -->
             </tbody>
           </table>
         </div>
