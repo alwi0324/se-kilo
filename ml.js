@@ -223,7 +223,7 @@ function renderTable(whatData) {
                              style="width: ${percentage}%; box-shadow: 0 0 8px rgba(245, 158, 11, 0.6), 0 0 2px rgba(245, 158, 11, 0.8);">
                         </div>
                     </div>
-                    <span class="font-semibold text-xs w-10 text-right text-amber-500 shadow-xs">${percentage.toLocaleString("id-ID")}%</span>
+                    <span class="font-semibold text-xs w-10 text-right ${percentage == 0 ? 'text-slate-400' : 'text-amber-500'} shadow-xs">${percentage.toLocaleString("id-ID")}%</span>
                 </div>
             </td>
             ${
@@ -236,20 +236,20 @@ function renderTable(whatData) {
                              style="width: ${verifPct}%; box-shadow: 0 0 8px rgba(34, 211, 238, 0.6), 0 0 2px rgba(34, 211, 238, 0.8);">
                         </div>
                     </div>
-                    <span class="font-semibold text-xs w-10 text-right text-cyan-400">${verifPct.toLocaleString("id-ID")}%</span>
+                    <span class="font-semibold text-xs w-10 text-right ${verifPct == 0 ? 'text-slate-400' : 'text-cyan-400'}">${verifPct.toLocaleString("id-ID")}%</span>
                 </div>
             </td>
             `
                 : ""
             }
             <td class="py-4 px-4 text-right">${tgt.toLocaleString("id-ID")}</td>
-            <td class="py-4 px-4 text-right"><span class="font-semibold text-green-600">${real.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-4 text-right"><span class="font-semibold ${real == 0 ? 'text-slate-400' : 'text-green-600'}">${real.toLocaleString("id-ID")}</span></td>
             <td class="py-4 px-4 text-right">${open.toLocaleString("id-ID")}</td>
             <td class="py-4 px-4 text-right">${submit.toLocaleString("id-ID")}</td>
-            <td class="py-4 px-4 text-right"><span class="font-semibold text-yellow-500">${draft.toLocaleString("id-ID")}</span></td>
-            <td class="py-4 px-4 text-right"><span class="font-semibold text-blue-500">${approved.toLocaleString("id-ID")}</span></td>
-            <td class="py-4 px-4 text-right"><span class="font-semibold text-red-500">${rejected.toLocaleString("id-ID")}</span></td>
-            <td class="py-4 px-4 text-right"><span class="font-semibold text-purple-500">${revoked.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-4 text-right"><span class="font-semibold ${draft == 0 ? 'text-slate-400' : 'text-yellow-500'}">${draft.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-4 text-right"><span class="font-semibold ${approved == 0 ? 'text-slate-400' : 'text-blue-500'}">${approved.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-4 text-right"><span class="font-semibold ${rejected == 0 ? 'text-slate-400' : 'text-red-500'}">${rejected.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-4 text-right"><span class="font-semibold ${revoked == 0 ? 'text-slate-400' : 'text-purple-500'}">${revoked.toLocaleString("id-ID")}</span></td>
         `;
     tbody.appendChild(row);
   });
