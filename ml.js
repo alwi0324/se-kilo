@@ -9,12 +9,13 @@ let globalPmlData = null;
 
 let globalPsgKecProgress = null;
 let selectedPml = "";
+let selectedPpl = "";
+let globalSlsDataRaw = [];
 let globalPsgPplPml = [];
 
 function updateDashboardData(whatData) {
   let data = whatData;
 
-  // JIKA menu saat ini adalah PPL dan filter yang dipilih BUKAN "Semua"
   if (currentMenu === "ppl" && selectedPml !== "Semua" && data) {
     // Cari indeks mana saja yang memiliki PML sesuai pilihan
     const indeksCocok = [];
@@ -24,7 +25,6 @@ function updateDashboardData(whatData) {
       }
     });
 
-    // Saring array data utama terlebih dahulu
     const filteredOpen = whatData.open.filter((_, idx) =>
       indeksCocok.includes(idx),
     );
@@ -176,28 +176,27 @@ function renderTable(whatData) {
   }
 
   const isPmlMenu = currentMenu === "pml";
+  const isSlsMenu = currentMenu === "sls";
   const theadRow = document.querySelector("#wrapper-table table thead tr");
 
   if (theadRow) {
-    // Reset atau bangun ulang isi Header secara dinamis berdasarkan menu aktif
     theadRow.innerHTML = `
-      <th class="py-3 px-4 text-left sticky left-0 bg-slate-50 dark:bg-slate-700 z-10">${dataContent.thName}</th>
-      <th class="py-3 px-4 text-right">Progress</th>
-      ${isPmlMenu ? `<th class="py-3 px-4 text-right text-blue-600 dark:text-blue-400">Terverifikasi</th>` : ""}
-      <th class="py-3 px-4 text-right">Muatan</th>
-      <th class="py-3 px-4 text-right">Terdata</th>
-      <th class="py-3 px-4 text-right">Open</th>
-      <th class="py-3 px-4 text-right">Pending</th>
-      <th class="py-3 px-4 text-right">Draft</th>
-      <th class="py-3 px-4 text-right">Approved</th>
-      <th class="py-3 px-4 text-right">Rejected</th>
-      <th class="py-3 px-4 text-right">Revoked</th>
-    `;
+    <th class="py-3 px-4 text-left sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">${dataContent.thName}</th>
+    <th class="py-3 px-4 text-center sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Progress</th>
+    ${isPmlMenu || isSlsMenu ? `<th class="py-3 px-4 text-center sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Terverifikasi</th>` : ""}
+    <th class="py-3 px-4 text-left sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Muatan</th>
+    <th class="py-3 px-4 text-left sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Terdata</th>
+    <th class="py-3 px-4 text-left sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Open</th>
+    <th class="py-3 px-4 text-left sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Pending</th>
+    <th class="py-3 px-4 text-left sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Draft</th>
+    <th class="py-3 px-4 text-left sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Approved</th>
+    <th class="py-3 px-4 text-left sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Rejected</th>
+    <th class="py-3 px-4 text-left sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Revoked</th>
+  `;
   }
 
   dataContent.labels.forEach((label, index) => {
     const tgt = dataContent.target[index];
-    const real = dataContent.realisasi[index];
     const percentage = dataContent.progress[index];
     const open = dataContent.open[index];
     const submit = dataContent.submit[index];
@@ -205,8 +204,11 @@ function renderTable(whatData) {
     const approved = dataContent.approved[index];
     const revoked = dataContent.revoked[index];
     const rejected = dataContent.rejected[index];
+    const real = dataContent.realisasi
+      ? dataContent.realisasi[index]
+      : (submit || 0) + (approved || 0) + (rejected || 0) + (revoked || 0);
     const verifPct =
-      isPmlMenu && dataContent.verifikasi
+      (isPmlMenu || isSlsMenu) && dataContent.verifikasi
         ? dataContent.verifikasi[index] || 0
         : 0;
     const row = document.createElement("tr");
@@ -224,7 +226,9 @@ function renderTable(whatData) {
                     <span class="font-semibold text-xs w-10 text-right text-amber-500 shadow-xs">${percentage.toLocaleString("id-ID")}%</span>
                 </div>
             </td>
-            ${isPmlMenu ? `
+            ${
+              isPmlMenu || isSlsMenu
+                ? `
             <td class="py-4 px-4">
                 <div class="flex items-center space-x-3 justify-end">
                     <div class="w-24 bg-slate-800 h-2 rounded-full overflow-visible hidden sm:block">
@@ -235,7 +239,9 @@ function renderTable(whatData) {
                     <span class="font-semibold text-xs w-10 text-right text-cyan-400">${verifPct.toLocaleString("id-ID")}%</span>
                 </div>
             </td>
-            ` : ''}
+            `
+                : ""
+            }
             <td class="py-4 px-4 text-right">${tgt.toLocaleString("id-ID")}</td>
             <td class="py-4 px-4 text-right"><span class="font-semibold text-green-600">${real.toLocaleString("id-ID")}</span></td>
             <td class="py-4 px-4 text-right">${open.toLocaleString("id-ID")}</td>
@@ -286,6 +292,11 @@ function renderChart(whatData) {
       plugins: {
         legend: { display: false },
         datalabels: {
+          display: function (context) {
+            const value = context.dataset.data[context.dataIndex];
+
+            return value > 0;
+          },
           anchor: "end",
           align: "start",
           offset: 3,
@@ -307,21 +318,33 @@ function renderChart(whatData) {
           callbacks: {
             label: function (context) {
               const idx = context.dataIndex;
-              const tgt = dataContent.target[idx].toLocaleString("id-ID");
-              const open = dataContent.open[idx];
-              const real = dataContent.realisasi[idx].toLocaleString("id-ID");
+              const tgt =
+                dataContent.target && dataContent.target[idx] !== undefined
+                  ? dataContent.target[idx].toLocaleString("id-ID")
+                  : "0";
+
+              const open =
+                dataContent.open && dataContent.open[idx] !== undefined
+                  ? dataContent.open[idx].toLocaleString("id-ID")
+                  : "0";
+
+              const real =
+                dataContent.realisasi &&
+                dataContent.realisasi[idx] !== undefined
+                  ? dataContent.realisasi[idx].toLocaleString("id-ID")
+                  : "0";
               const pct = context.parsed.x;
+              const draft =
+                dataContent.draft && dataContent.draft[idx] !== undefined
+                  ? dataContent.draft[idx].toLocaleString("id-ID")
+                  : "0";
 
               if (currentMenu === "ppl") {
-                // 1. Ambil kecocokan PML seperti yang sudah berhasil sebelumnya
                 const pmlMatch = globalPsgPplPml.find(
                   (item) =>
                     item.ppl.toLowerCase() === context.label.toLowerCase(),
                 );
                 const namaPml = pmlMatch ? pmlMatch.pml : "-";
-
-                // 2. KUNCI TAMBAHAN: Tarik nilai 'Tambah Submit' berdasarkan baris dataContent saat ini
-                // Menggunakan dataContent menjamin datanya sinkron dengan grafik yang sedang tampil
                 const tambahSubmitNilai =
                   dataContent.tambah_submit && dataContent.tambah_submit[idx]
                     ? dataContent.tambah_submit[idx].toLocaleString("id-ID")
@@ -332,6 +355,7 @@ function renderChart(whatData) {
                   `PML: ${namaPml}`,
                   `Sudah Didata: ${real}`,
                   `Belum Didata: ${open}`,
+                  `Draft: ${draft}`,
                   `Total Muatan: ${tgt}`,
                   `Tambah Submit: ${tambahSubmitNilai}`,
                 ];
@@ -342,6 +366,20 @@ function renderChart(whatData) {
                   `Terverifikasi: ${verif.toLocaleString("id-ID")}%`,
                   `Sudah Didata: ${real}`,
                   `Belum Didata: ${open}`,
+                  `Draft: ${draft}`,
+                  `Total Muatan: ${tgt}`,
+                ];
+              } else if (currentMenu === "sls") {
+                const namaDesa =
+                  dataContent.desa && dataContent.desa[idx]
+                    ? dataContent.desa[idx]
+                    : "-";
+                return [
+                  `Progress: ${pct.toLocaleString("id-ID")}%`,
+                  `Desa: ${namaDesa}`,
+                  `Sudah Didata: ${real}`,
+                  `Belum Didata: ${open}`,
+                  `Draft: ${draft}`,
                   `Total Muatan: ${tgt}`,
                 ];
               } else {
@@ -349,6 +387,7 @@ function renderChart(whatData) {
                   `Progress: ${pct.toLocaleString("id-ID")}%`,
                   `Sudah Didata: ${real}`,
                   `Belum Didata: ${open}`,
+                  `Draft: ${draft}`,
                   `Total Muatan: ${tgt}`,
                 ];
               }
@@ -382,6 +421,11 @@ function kapitalTiapKata(huruf) {
   return huruf.toLowerCase().replace(/\b\w/g, function (karakter) {
     return karakter.toUpperCase();
   });
+}
+
+function dataSLSHandler(data) {
+  globalSlsDataRaw = data;
+  buildSlsDashboard();
 }
 
 const dataKecHandler = (data) => {
@@ -471,8 +515,7 @@ const dataPPLHandler = (data) => {
 
     // Event listener saat user mengubah filter dropdown
     dropdown.onchange = (event) => {
-      selectedPml = event.target.value;
-      updateDashboardData(globalPplData);
+      handlePmlFilterChange(event.target.value);
     };
   }
 
@@ -571,6 +614,152 @@ getSheetData({
   },
 });
 
+function buildSlsDashboard() {
+  const pmlDropdown = document.getElementById("filter-pml");
+  const pplDropdown = document.getElementById("filter-ppl");
+
+  if (!globalSlsDataRaw || globalSlsDataRaw.length === 0) return;
+
+  // 1. Ekstrak daftar unik PML untuk dropdown
+  const uniquePml = [
+    ...new Set(globalSlsDataRaw.map((item) => item.pml)),
+  ].filter(Boolean);
+  pmlDropdown.innerHTML = uniquePml
+    .map((pml) => `<option value="${pml}">${pml}</option>`)
+    .join("");
+
+  selectedPml = uniquePml[0] || "";
+  pmlDropdown.value = selectedPml;
+
+  // 2. Filter daftar PPL yang HANYA berada di bawah PML terpilih
+  const filteredPpls = [
+    ...new Set(
+      globalSlsDataRaw
+        .filter((item) => item.pml === selectedPml)
+        .map((item) => item.ppl),
+    ),
+  ].filter(Boolean);
+
+  pplDropdown.innerHTML = filteredPpls
+    .map((ppl) => `<option value="${ppl}">${ppl}</option>`)
+    .join("");
+
+  // Pastikan PPL terpilih disesuaikan dengan daftar PPL baru hasil filter PML
+  if (!selectedPpl || !filteredPpls.includes(selectedPpl)) {
+    selectedPpl = filteredPpls[0] || "";
+  }
+  pplDropdown.value = selectedPpl;
+
+  // 3. Proses data untuk grafik dan tabel
+  processSlsData();
+}
+
+function handlePmlFilterChange(pmlValue) {
+  selectedPml = pmlValue; // Simpan nilai PML terpilih
+
+  if (currentMenu === "sls") {
+    // 1. Dapatkan daftar PPL baru yang berada di bawah PML ini
+    const filteredPpls = [
+      ...new Set(
+        globalSlsDataRaw
+          .filter((item) => item.pml === selectedPml)
+          .map((item) => item.ppl),
+      ),
+    ].filter(Boolean);
+
+    // 2. Set default PPL ke orang pertama di dalam PML baru tersebut
+    selectedPpl = filteredPpls[0] || "";
+
+    // 3. Ambil elemen dropdown PPL dan perbarui isinya secara manual di sini
+    const pplDropdown = document.getElementById("filter-ppl");
+    if (pplDropdown) {
+      pplDropdown.innerHTML = filteredPpls
+        .map((ppl) => `<option value="${ppl}">${ppl}</option>`)
+        .join("");
+      pplDropdown.value = selectedPpl;
+    }
+
+    // 4. Proses data SLS (Fungsi ini otomatis memanggil updateDashboardData dan render chart/tabel)
+    processSlsData();
+  } else if (currentMenu === "ppl") {
+    // Jika sedang di menu PPL, perbarui dashboard menggunakan data PPL global
+    // Logika filter per-PML-nya sudah ditangani otomatis oleh fungsi updateDashboardData
+    updateDashboardData(globalPplData);
+  }
+}
+
+function handlePplFilterChange(pplValue) {
+  selectedPpl = pplValue;
+  processSlsData();
+}
+
+// Mengompilasi data SLS terpilih menjadi bentuk struktur activeData objek dashboard
+function processSlsData() {
+  const rows = globalSlsDataRaw.filter(
+    (item) => item.pml === selectedPml && item.ppl === selectedPpl,
+  );
+
+  const slsData = {
+    title: `Progress SLS per PPL: ${selectedPpl}`,
+    thName: "SLS",
+    lastUpdate:
+      globalSlsDataRaw[0] && globalSlsDataRaw[0].update
+        ? globalSlsDataRaw[0].update
+        : "Data tidak diketahui",
+    labels: rows.map((r) => r.sls || ""),
+    desa: rows.map((r) => r.desa || ""),
+    target: rows.map((r) => Number(r.target) || 0),
+    open: rows.map((r) => Number(r.open) || 0),
+    realisasi: rows.map(
+      (r) =>
+        parseFloat(r.submit) +
+          parseFloat(r.approved) +
+          parseFloat(r.rejected) +
+          parseFloat(r.revoked) || 0,
+    ),
+    submit: rows.map((r) => Number(r.submit) || 0),
+    draft: rows.map((r) => Number(r.draft) || 0),
+    approved: rows.map((r) => Number(r.approved) || 0),
+    rejected: rows.map((r) => Number(r.rejected) || 0),
+    revoked: rows.map((r) => Number(r.revoked) || 0),
+    progress: rows.map((r) => Number(r.progress) || 0),
+    verifikasi: rows.map(
+      (r) => Number(r.progress_verifikasi) || Number(r.terverifikasi) || 0,
+    ),
+    stats: {
+      target: rows.reduce((acc, r) => acc + (Number(r.target) || 0), 0),
+      open: rows.reduce((acc, r) => acc + (Number(r.open) || 0), 0),
+      realisasi: rows.reduce(
+        (acc, r) =>
+          acc +
+          ((Number(r.submit) || 0) +
+            (Number(r.approved) || 0) +
+            (Number(r.rejected) || 0) +
+            (Number(r.revoked) || 0)),
+        0,
+      ),
+      persen: 0,
+    },
+  };
+
+  if (slsData.stats.target > 0) {
+    const hitungPersen = (slsData.stats.realisasi / slsData.stats.target) * 100;
+    slsData.stats.persen = hitungPersen.toFixed(2).replace(".", ",") + "%";
+  } else {
+    slsData.stats.persen = "0,00%";
+  }
+
+  activeData = slsData;
+  updateDashboardData(activeData);
+
+  // Paksa render sesuai dengan view yang sedang aktif saat ini!
+  if (currentView === "table") {
+    renderTable(activeData);
+  } else {
+    if (typeof renderChart === "function") renderChart(activeData);
+  }
+}
+
 function toggleSidebar() {
   const sidebar = document.getElementById("sidebar");
   const backdrop = document.getElementById("sidebar-backdrop");
@@ -663,8 +852,9 @@ if (localStorage.getItem("theme") === "dark") {
 
 function switchMenu(menu) {
   const filterContainer = document.getElementById("pml-filter-container");
+  const pplFilterWrapper = document.getElementById("ppl-filter-wrapper");
 
-  ["kecamatan", "ppl", "pml"].forEach((m) => {
+  ["kecamatan", "ppl", "pml", "sls"].forEach((m) => {
     const btn = document.getElementById(`menu-${m}`);
     btn.className =
       "theme-transition w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-sm font-medium text-left text-slate-600 hover:bg-slate-100/70 cursor-pointer";
@@ -680,13 +870,28 @@ function switchMenu(menu) {
   if (menu === "kecamatan") {
     filterContainer.classList.add("hidden");
     activeData = globalKecData;
+    updateDashboardData(activeData);
   } else if (menu === "ppl") {
     filterContainer.classList.remove("hidden");
+    pplFilterWrapper.classList.add("hidden");
     activeData = globalPplData;
 
     const dropdown = document.getElementById("filter-pml");
-    if (dropdown && selectedPml) {
-      dropdown.value = selectedPml;
+    if (dropdown && selectedPml) dropdown.value = selectedPml;
+    updateDashboardData(activeData);
+  } else if (menu === "sls") {
+    filterContainer.classList.remove("hidden");
+    pplFilterWrapper.classList.remove("hidden"); // Munculkan filter PPL
+
+    if (globalSlsDataRaw && globalSlsDataRaw.length > 0) {
+      buildSlsDashboard();
+    } else {
+      // Panggil API getSheetData jika data SLS belum terload
+      getSheetData({
+        query: "SELECT *",
+        sheet: "SLS",
+        callback: dataSLSHandler,
+      });
     }
   } else {
     filterContainer.classList.add("hidden");
@@ -718,11 +923,15 @@ function switchView(view) {
   const wrapperTable = document.getElementById("wrapper-table");
   const isDark = document.documentElement.classList.contains("dark");
 
+  // KUNCI PERBAIKAN: Tentukan dataKunci berdasarkan menu yang sedang aktif
   let dataKunci = globalKecData;
   if (currentMenu === "ppl") {
     dataKunci = globalPplData;
   } else if (currentMenu === "pml") {
     dataKunci = globalPmlData;
+  } else if (currentMenu === "sls") {
+    // Untuk menu SLS, gunakan data olahan aktif yang sudah terfilter PPL
+    dataKunci = activeData;
   }
 
   // Terapkan filter PML yang sama jika user sedang di menu PPL
