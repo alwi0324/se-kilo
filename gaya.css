@@ -78,7 +78,6 @@ td.sticky.left-0 {
 html.dark th.sticky.left-0,
 html.dark td.sticky.left-0 {
   box-shadow: 4px 0 8px -4px rgba(0, 0, 0, 0.5) !important;
-  background-color: #1e293b !important; /* Memastikan background darkmode tetap solid */
 }
 
 /* 1. Atur lebar dan tinggi area scrollbar */
