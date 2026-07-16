@@ -181,7 +181,7 @@ function renderTable(whatData) {
 
   if (theadRow) {
     theadRow.innerHTML = `
-    <th class="py-3 px-4 text-left sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">${dataContent.thName}</th>
+    <th class="py-3 px-4 text-left sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-50 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">${dataContent.thName}</th>
     <th class="py-3 px-4 text-center sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Progress</th>
     ${isPmlMenu || isSlsMenu ? `<th class="py-3 px-4 text-center sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Terverifikasi</th>` : ""}
     <th class="py-3 px-4 text-left sticky top-0 left-0 bg-slate-100 dark:!bg-[#1e293b] z-40 text-slate-500 dark:text-slate-400 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)]">Muatan</th>
