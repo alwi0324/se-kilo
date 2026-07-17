@@ -138,8 +138,9 @@ function updateDashboardData(whatData) {
 
   // BINDING DATA UPDATE SECARA AMAN
   const elUpdate = document.getElementById("dashboard-update");
+  const t = data.lastupdate.split(" pada ");
   if (elUpdate && data.lastUpdate) {
-    elUpdate.innerHTML = `<i class="fa-regular fa-clock text-amber-500"></i> <span>${data.lastUpdate}</span>`;
+    elUpdate.innerHTML = `<i class="fa-regular fa-clock text-amber-500"></i> <span>${t[0]} pada <b class="text-slate-950">${t[1]}</b></span>`;
   }
   if (elThName) elThName.innerText = data.thName;
 
@@ -246,10 +247,10 @@ function renderTable(whatData) {
             <td class="py-2 px-2 text-right"><span class="font-semibold ${real == 0 ? 'text-slate-400' : 'text-green-600'}">${real.toLocaleString("id-ID")}</span></td>
             <td class="py-2 px-2 text-right">${open.toLocaleString("id-ID")}</td>
             <td class="py-2 px-2 text-right">${submit.toLocaleString("id-ID")}</td>
-            <td class="py-2 px-2 text-right"><span class="font-semibold ${draft == 0 ? 'text-slate-400' : 'text-yellow-500'}">${draft.toLocaleString("id-ID")}</span></td>
-            <td class="py-2 px-2 text-right"><span class="font-semibold ${approved == 0 ? 'text-slate-400' : 'text-blue-500'}">${approved.toLocaleString("id-ID")}</span></td>
-            <td class="py-2 px-2 text-right"><span class="font-semibold ${rejected == 0 ? 'text-slate-400' : 'text-red-500'}">${rejected.toLocaleString("id-ID")}</span></td>
-            <td class="py-2 px-2 text-right"><span class="font-semibold ${revoked == 0 ? 'text-slate-400' : 'text-purple-500'}">${revoked.toLocaleString("id-ID")}</span></td>
+            <td class="py-2 px-2 text-right"><span class="${draft == 0 ? 'text-slate-400' : 'text-yellow-500'}">${draft.toLocaleString("id-ID")}</span></td>
+            <td class="py-2 px-2 text-right"><span class="${approved == 0 ? 'text-slate-400' : 'text-blue-500'}">${approved.toLocaleString("id-ID")}</span></td>
+            <td class="py-2 px-2 text-right"><span class="${rejected == 0 ? 'text-slate-400' : 'text-red-500'}">${rejected.toLocaleString("id-ID")}</span></td>
+            <td class="py-2 px-2 text-right"><span class="${revoked == 0 ? 'text-slate-400' : 'text-purple-500'}">${revoked.toLocaleString("id-ID")}</span></td>
         `;
     tbody.appendChild(row);
   });
