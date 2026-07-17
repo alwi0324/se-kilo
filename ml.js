@@ -272,6 +272,7 @@ function renderChart(whatData) {
   const dataContent = whatData || activeData;
   const isDark = document.documentElement.classList.contains("dark");
   const textColor = isDark ? "#cbd5e1" : "#64748b";
+  const isMobile = window.innerWidth < 768;
   if (!dataContent || !dataContent.progress) return;
   const percentages = dataContent.progress.map((pct) =>
     parseFloat(pct.toFixed(2)),
@@ -301,21 +302,29 @@ function renderChart(whatData) {
       plugins: {
         legend: { display: false },
         datalabels: {
-          display: function (context) {
-            const value = context.dataset.data[context.dataIndex];
-
-            return value > 0;
-          },
+          display: (context) => context.dataset.data[context.dataIndex > 0;
+        },
           anchor: "end",
-          align: "start",
-          offset: 3,
-          color: "#000000",
+          align: (context) => {
+            const value = context.dataset.data[context.dataIndex];
+            if (isMobile && value < 35) {
+              return "end"; 
+            }
+            return "start";
+          },
+          offset: 4,
+          color: (context) => {
+            const value = context.dataset.data[context.dataIndex];
+            if (isMobile && value < 35) {
+              return isDark ? "#ffffff" : "#000000";
+            }
+            return "#000000"; 
+          },
           font: {
             weight: "bold",
-            size: 15,
+            size: isMobile ? 12 : 15,
             family: "monospace",
           },
-          // Format tampilan agar ditambahkan simbol '%'
           formatter: (value) => value.toLocaleString("id-ID") + "%",
         },
         tooltip: {
@@ -389,7 +398,7 @@ function renderChart(whatData) {
                   `Progress: ${pct.toLocaleString("id-ID")}%`,
                   `Desa: ${namaDesa}`,
                   ...(pct < 100 ? [
-                    `Tambah 1 Submit: ${addOne.toFixed(2).replace('.', ',')}%`,
+                    `Tambah 1 Submit: ${addOne == 100 ? addOne + '%' : addOne.toFixed(2).replace('.', ',')}%`,
                     `Kenaikan: ${kenaikan.toFixed(2).replace('.', ',')}%`
                   ] : []),
                   `Sudah Didata: ${real}`,
