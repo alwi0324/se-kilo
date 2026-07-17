@@ -214,8 +214,8 @@ function renderTable(whatData) {
     const row = document.createElement("tr");
     row.className = "theme-transition border-b border-slate-100";
     row.innerHTML = `
-            <td class="py-4 px-4 whitespace-normal font-medium text-slate-950 sticky left-0 bg-white dark:bg-slate-800 z-10">${label}</td>
-            <td class="py-4 px-4">
+            <td class="py-2 px-2 whitespace-normal font-medium text-xs text-slate-950 sticky left-0 bg-white dark:bg-slate-800 z-10">${label}</td>
+            <td class="py-2 px-2">
                 <div class="flex items-center space-x-3 justify-end">
                     <div class="w-24 bg-slate-800 h-2 rounded-full overflow-visible hidden sm:block">
                         <!-- Progress Bar dengan Efek Neon Glow Halus -->
@@ -229,7 +229,7 @@ function renderTable(whatData) {
             ${
               isPmlMenu || isSlsMenu
                 ? `
-            <td class="py-4 px-4">
+            <td class="py-2 px-2">
                 <div class="flex items-center space-x-3 justify-end">
                     <div class="w-24 bg-slate-800 h-2 rounded-full overflow-visible hidden sm:block">
                         <div class="bg-cyan-400 h-full rounded-full transition-all duration-500" 
@@ -242,14 +242,14 @@ function renderTable(whatData) {
             `
                 : ""
             }
-            <td class="py-4 px-4 text-right">${tgt.toLocaleString("id-ID")}</td>
-            <td class="py-4 px-4 text-right"><span class="font-semibold ${real == 0 ? 'text-slate-400' : 'text-green-600'}">${real.toLocaleString("id-ID")}</span></td>
-            <td class="py-4 px-4 text-right">${open.toLocaleString("id-ID")}</td>
-            <td class="py-4 px-4 text-right">${submit.toLocaleString("id-ID")}</td>
-            <td class="py-4 px-4 text-right"><span class="font-semibold ${draft == 0 ? 'text-slate-400' : 'text-yellow-500'}">${draft.toLocaleString("id-ID")}</span></td>
-            <td class="py-4 px-4 text-right"><span class="font-semibold ${approved == 0 ? 'text-slate-400' : 'text-blue-500'}">${approved.toLocaleString("id-ID")}</span></td>
-            <td class="py-4 px-4 text-right"><span class="font-semibold ${rejected == 0 ? 'text-slate-400' : 'text-red-500'}">${rejected.toLocaleString("id-ID")}</span></td>
-            <td class="py-4 px-4 text-right"><span class="font-semibold ${revoked == 0 ? 'text-slate-400' : 'text-purple-500'}">${revoked.toLocaleString("id-ID")}</span></td>
+            <td class="py-2 px-2 text-right">${tgt.toLocaleString("id-ID")}</td>
+            <td class="py-2 px-2 text-right"><span class="font-semibold ${real == 0 ? 'text-slate-400' : 'text-green-600'}">${real.toLocaleString("id-ID")}</span></td>
+            <td class="py-2 px-2 text-right">${open.toLocaleString("id-ID")}</td>
+            <td class="py-2 px-2 text-right">${submit.toLocaleString("id-ID")}</td>
+            <td class="py-2 px-2 text-right"><span class="font-semibold ${draft == 0 ? 'text-slate-400' : 'text-yellow-500'}">${draft.toLocaleString("id-ID")}</span></td>
+            <td class="py-2 px-2 text-right"><span class="font-semibold ${approved == 0 ? 'text-slate-400' : 'text-blue-500'}">${approved.toLocaleString("id-ID")}</span></td>
+            <td class="py-2 px-2 text-right"><span class="font-semibold ${rejected == 0 ? 'text-slate-400' : 'text-red-500'}">${rejected.toLocaleString("id-ID")}</span></td>
+            <td class="py-2 px-2 text-right"><span class="font-semibold ${revoked == 0 ? 'text-slate-400' : 'text-purple-500'}">${revoked.toLocaleString("id-ID")}</span></td>
         `;
     tbody.appendChild(row);
   });
