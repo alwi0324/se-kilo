@@ -1,3 +1,6 @@
+const centang = `<svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-green-500" viewBox="0 0 20 20" fill="currentColor">
+    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+  </svg>`;
 let currentMenu = "kecamatan";
 let currentView = "chart";
 let myChart = null;
@@ -215,8 +218,13 @@ function renderTable(whatData) {
     const row = document.createElement("tr");
     row.className = "theme-transition border-b border-slate-100";
     row.innerHTML = `
-            <td class="py-2 px-2 whitespace-normal font-medium text-xs text-slate-950 sticky left-0 bg-white dark:bg-slate-800 z-10">${label}</td>
-            <td class="py-2 px-2">
+            <td class="py-4 px-2 whitespace-normal font-medium text-xs text-slate-950 sticky left-0 bg-white dark:bg-slate-800 z-10">
+              <div class="flex items-center gap-2">
+                <span>${label}</span>
+                ${percentage === 100 ? centang : ''}
+              </div>
+            </td>
+            <td class="py-4 px-2">
                 <div class="flex items-center space-x-3 justify-end">
                     <div class="w-24 bg-slate-800 h-2 rounded-full overflow-visible hidden sm:block">
                         <!-- Progress Bar dengan Efek Neon Glow Halus -->
@@ -230,7 +238,7 @@ function renderTable(whatData) {
             ${
               isPmlMenu || isSlsMenu
                 ? `
-            <td class="py-2 px-2">
+            <td class="py-4 px-2">
                 <div class="flex items-center space-x-3 justify-end">
                     <div class="w-24 bg-slate-800 h-2 rounded-full overflow-visible hidden sm:block">
                         <div class="bg-cyan-400 h-full rounded-full transition-all duration-500" 
@@ -243,14 +251,14 @@ function renderTable(whatData) {
             `
                 : ""
             }
-            <td class="py-2 px-2 text-right">${tgt.toLocaleString("id-ID")}</td>
-            <td class="py-2 px-2 text-right"><span class="font-semibold ${real == 0 ? 'text-slate-400' : 'text-green-600'}">${real.toLocaleString("id-ID")}</span></td>
-            <td class="py-2 px-2 text-right">${open.toLocaleString("id-ID")}</td>
-            <td class="py-2 px-2 text-right">${submit.toLocaleString("id-ID")}</td>
-            <td class="py-2 px-2 text-right"><span class="${draft == 0 ? 'text-slate-400' : 'text-yellow-500'}">${draft.toLocaleString("id-ID")}</span></td>
-            <td class="py-2 px-2 text-right"><span class="${approved == 0 ? 'text-slate-400' : 'text-blue-500'}">${approved.toLocaleString("id-ID")}</span></td>
-            <td class="py-2 px-2 text-right"><span class="${rejected == 0 ? 'text-slate-400' : 'text-red-500'}">${rejected.toLocaleString("id-ID")}</span></td>
-            <td class="py-2 px-2 text-right"><span class="${revoked == 0 ? 'text-slate-400' : 'text-purple-500'}">${revoked.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-2 text-right">${tgt.toLocaleString("id-ID")}</td>
+            <td class="py-4 px-2 text-right"><span class="font-semibold ${real == 0 ? 'text-slate-400' : 'text-green-600'}">${real.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-2 text-right">${open.toLocaleString("id-ID")}</td>
+            <td class="py-4 px-2 text-right">${submit.toLocaleString("id-ID")}</td>
+            <td class="py-4 px-2 text-right"><span class="${draft == 0 ? 'text-slate-400' : 'text-yellow-500'}">${draft.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-2 text-right"><span class="${approved == 0 ? 'text-slate-400' : 'text-blue-500'}">${approved.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-2 text-right"><span class="${rejected == 0 ? 'text-slate-400' : 'text-red-500'}">${rejected.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-2 text-right"><span class="${revoked == 0 ? 'text-slate-400' : 'text-purple-500'}">${revoked.toLocaleString("id-ID")}</span></td>
         `;
     tbody.appendChild(row);
   });
