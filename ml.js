@@ -388,8 +388,10 @@ function renderChart(whatData) {
                 return [
                   `Progress: ${pct.toLocaleString("id-ID")}%`,
                   `Desa: ${namaDesa}`,
-                  `Tambah 1 Submit: ${addOne.toFixed(2).toLocaleString("id-ID")}%`,
-                  `Kenaikan: ${kenaikan.toFixed(2).toLocaleString("id-ID")}%`,
+                  ...(pct < 100 ? [
+                    `Tambah 1 Submit: ${addOne.toFixed(2).replace('.', ',')}%`,
+                    `Kenaikan: ${kenaikan.toFixed(2).replace('.', ',')}%`
+                  ] : []),
                   `Sudah Didata: ${real}`,
                   `Belum Didata: ${open}`,
                   `Draft: ${draft}`,
