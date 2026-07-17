@@ -343,8 +343,8 @@ function renderChart(whatData) {
                   ? dataContent.realisasi[idx].toLocaleString("id-ID")
                   : "0";
               const pct = context.parsed.x;
-              const addOne = (pct + 1/dataContent.realisasi[idx] * 100).toFixed(2).replace('.', ',') + "%";
-              const kenaikan = (1/dataContent.realisasi[idx] * 100).toFixed(2).replace('.', ',') + "%";
+              const addOne = (dataContent.realisasi[idx] + 1)/dataContent.target[idx] * 100;
+              const kenaikan = 1/dataContent.target[idx] * 100;
               const draft =
                 dataContent.draft && dataContent.draft[idx] !== undefined
                   ? dataContent.draft[idx].toLocaleString("id-ID")
@@ -388,8 +388,8 @@ function renderChart(whatData) {
                 return [
                   `Progress: ${pct.toLocaleString("id-ID")}%`,
                   `Desa: ${namaDesa}`,
-                  `Tambah 1 Submit: ${addOne}`,
-                  `Kenaikan: ${kenaikan}`,
+                  `Tambah 1 Submit: ${addOne.toFixed(2).toLocaleString("id-ID")}%`,
+                  `Kenaikan: ${kenaikan.toFixed(2).toLocaleString("id-ID")}%`,
                   `Sudah Didata: ${real}`,
                   `Belum Didata: ${open}`,
                   `Draft: ${draft}`,
