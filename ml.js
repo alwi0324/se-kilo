@@ -138,7 +138,7 @@ function updateDashboardData(whatData) {
 
   // BINDING DATA UPDATE SECARA AMAN
   const elUpdate = document.getElementById("dashboard-update");
-  const t = data.lastupdate.split(" pada ");
+  const t = data.lastUpdate.split(" pada ");
   if (elUpdate && data.lastUpdate) {
     elUpdate.innerHTML = `<i class="fa-regular fa-clock text-amber-500"></i> <span>${t[0]} pada <b class="text-slate-950">${t[1]}</b></span>`;
   }
