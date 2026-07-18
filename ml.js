@@ -302,7 +302,7 @@ function renderChart(whatData) {
       plugins: {
         legend: { display: false },
         datalabels: {
-          display: (context) => context.dataset.data[context.dataIndex > 0;
+          display: (context) => context.dataset.data[context.dataIndex] > 0;
         },
           anchor: "end",
           align: (context) => {
