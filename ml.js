@@ -391,7 +391,7 @@ function renderChart(whatData) {
                   `Desa: ${namaDesa}`,
                   ...(pct < 100
                     ? [
-                        `Tambah 1 Submit: ${addOne == 100 ? "100%" : addOne.toFixed(2).replace(".", ",")}%`,
+                        `Tambah 1 Submit: ${addOne == 100 ? "100" : addOne.toFixed(2).replace(".", ",")}%`,
                         `Kenaikan: ${kenaikan.toFixed(2).replace(".", ",")}%`,
                       ]
                     : []),
