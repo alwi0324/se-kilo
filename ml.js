@@ -58,8 +58,6 @@ function updateDashboardData(whatData) {
         (nama) => nama.toLowerCase() === selectedPml.toLowerCase(),
       );
 
-      // Jika ketemu, ambil nilai progress dari array data PML asli (misal: data.progress[pmlIdx])
-      // Catatan: Sesuaikan 'globalPmlData.progress' di bawah dengan nama properti array progress di handler PML-mu
       if (
         pmlIdx !== -1 &&
         globalPmlData.progress &&
@@ -67,11 +65,10 @@ function updateDashboardData(whatData) {
       ) {
         const nilaiProgressRaw = globalPmlData.progress[pmlIdx];
 
-        // Format ke "46,28%" (jika data dari Sheets masih berupa angka mentah 46.28)
         progressPmlText =
           typeof nilaiProgressRaw === "number"
             ? nilaiProgressRaw.toFixed(2).replace(".", ",") + "%"
-            : nilaiProgressRaw; // Jika dari Sheets sudah berbentuk teks "46,28%"
+            : nilaiProgressRaw;
       }
     }
 
@@ -221,7 +218,7 @@ function renderTable(whatData) {
             <td class="py-4 px-2 whitespace-normal font-medium text-xs text-slate-950 sticky left-0 bg-white dark:bg-slate-800 z-10">
               <div class="flex items-center gap-2">
                 <span>${label}</span>
-                ${percentage === 100 ? centang : ''}
+                ${percentage === 100 ? centang : ""}
               </div>
             </td>
             <td class="py-4 px-2">
@@ -232,7 +229,7 @@ function renderTable(whatData) {
                              style="width: ${percentage}%; box-shadow: 0 0 8px rgba(245, 158, 11, 0.6), 0 0 2px rgba(245, 158, 11, 0.8);">
                         </div>
                     </div>
-                    <span class="font-semibold text-xs w-10 text-right ${percentage == 0 ? 'text-slate-400' : 'text-amber-500'} shadow-xs">${percentage.toLocaleString("id-ID")}%</span>
+                    <span class="font-semibold text-xs w-10 text-right ${percentage == 0 ? "text-slate-400" : "text-amber-500"} shadow-xs">${percentage.toLocaleString("id-ID")}%</span>
                 </div>
             </td>
             ${
@@ -245,20 +242,20 @@ function renderTable(whatData) {
                              style="width: ${verifPct}%; box-shadow: 0 0 8px rgba(34, 211, 238, 0.6), 0 0 2px rgba(34, 211, 238, 0.8);">
                         </div>
                     </div>
-                    <span class="font-semibold text-xs w-10 text-right ${verifPct == 0 ? 'text-slate-400' : 'text-cyan-400'}">${verifPct.toLocaleString("id-ID")}%</span>
+                    <span class="font-semibold text-xs w-10 text-right ${verifPct == 0 ? "text-slate-400" : "text-cyan-400"}">${verifPct.toLocaleString("id-ID")}%</span>
                 </div>
             </td>
             `
                 : ""
             }
             <td class="py-4 px-2 text-right">${tgt.toLocaleString("id-ID")}</td>
-            <td class="py-4 px-2 text-right"><span class="font-semibold ${real == 0 ? 'text-slate-400' : 'text-green-600'}">${real.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-2 text-right"><span class="font-semibold ${real == 0 ? "text-slate-400" : "text-green-600"}">${real.toLocaleString("id-ID")}</span></td>
             <td class="py-4 px-2 text-right">${open.toLocaleString("id-ID")}</td>
             <td class="py-4 px-2 text-right">${submit.toLocaleString("id-ID")}</td>
-            <td class="py-4 px-2 text-right"><span class="${draft == 0 ? 'text-slate-400' : 'text-yellow-500'}">${draft.toLocaleString("id-ID")}</span></td>
-            <td class="py-4 px-2 text-right"><span class="${approved == 0 ? 'text-slate-400' : 'text-blue-500'}">${approved.toLocaleString("id-ID")}</span></td>
-            <td class="py-4 px-2 text-right"><span class="${rejected == 0 ? 'text-slate-400' : 'text-red-500'}">${rejected.toLocaleString("id-ID")}</span></td>
-            <td class="py-4 px-2 text-right"><span class="${revoked == 0 ? 'text-slate-400' : 'text-purple-500'}">${revoked.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-2 text-right"><span class="${draft == 0 ? "text-slate-400" : "text-yellow-500"}">${draft.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-2 text-right"><span class="${approved == 0 ? "text-slate-400" : "text-blue-500"}">${approved.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-2 text-right"><span class="${rejected == 0 ? "text-slate-400" : "text-red-500"}">${rejected.toLocaleString("id-ID")}</span></td>
+            <td class="py-4 px-2 text-right"><span class="${revoked == 0 ? "text-slate-400" : "text-purple-500"}">${revoked.toLocaleString("id-ID")}</span></td>
         `;
     tbody.appendChild(row);
   });
@@ -302,138 +299,140 @@ function renderChart(whatData) {
       plugins: {
         legend: { display: false },
         datalabels: {
-          display: (context) => context.dataset.data[context.dataIndex] > 0
+          display: (context) => context.dataset.data[context.dataIndex] > 0,
         },
-          anchor: "end",
-          align: (context) => {
-            const value = context.dataset.data[context.dataIndex];
-            if (isMobile && value < 35) {
-              return "end"; 
-            }
-            return "start";
-          },
-          offset: 4,
-          color: (context) => {
-            const value = context.dataset.data[context.dataIndex];
-            if (isMobile && value < 35) {
-              return isDark ? "#ffffff" : "#000000";
-            }
-            return "#000000"; 
-          },
-          font: {
-            weight: "bold",
-            size: isMobile ? 12 : 15,
-            family: "monospace",
-          },
-          formatter: (value) => value.toLocaleString("id-ID") + "%",
+        anchor: "end",
+        align: (context) => {
+          const value = context.dataset.data[context.dataIndex];
+          if (isMobile && value < 35) {
+            return "end";
+          }
+          return "start";
         },
-        tooltip: {
-          backgroundColor: isDark ? "#1e293b" : "#0f172a",
-          titleColor: "#ffffff",
-          bodyColor: "#e2e8f0",
-          borderColor: isDark ? "#475569" : "#334155",
-          borderWidth: 1,
-          callbacks: {
-            label: function (context) {
-              const idx = context.dataIndex;
-              const tgt =
-                dataContent.target && dataContent.target[idx] !== undefined
-                  ? dataContent.target[idx].toLocaleString("id-ID")
+        offset: 4,
+        color: (context) => {
+          const value = context.dataset.data[context.dataIndex];
+          if (isMobile && value < 35) {
+            return isDark ? "#ffffff" : "#000000";
+          }
+          return "#000000";
+        },
+        font: {
+          weight: "bold",
+          size: isMobile ? 12 : 15,
+          family: "monospace",
+        },
+        formatter: (value) => value.toLocaleString("id-ID") + "%",
+      },
+      tooltip: {
+        backgroundColor: isDark ? "#1e293b" : "#0f172a",
+        titleColor: "#ffffff",
+        bodyColor: "#e2e8f0",
+        borderColor: isDark ? "#475569" : "#334155",
+        borderWidth: 1,
+        callbacks: {
+          label: function (context) {
+            const idx = context.dataIndex;
+            const tgt =
+              dataContent.target && dataContent.target[idx] !== undefined
+                ? dataContent.target[idx].toLocaleString("id-ID")
+                : "0";
+
+            const open =
+              dataContent.open && dataContent.open[idx] !== undefined
+                ? dataContent.open[idx].toLocaleString("id-ID")
+                : "0";
+
+            const real =
+              dataContent.realisasi && dataContent.realisasi[idx] !== undefined
+                ? dataContent.realisasi[idx].toLocaleString("id-ID")
+                : "0";
+            const pct = context.parsed.x;
+            const addOne =
+              ((dataContent.realisasi[idx] + 1) / dataContent.target[idx]) *
+              100;
+            const kenaikan = (1 / dataContent.target[idx]) * 100;
+            const draft =
+              dataContent.draft && dataContent.draft[idx] !== undefined
+                ? dataContent.draft[idx].toLocaleString("id-ID")
+                : "0";
+
+            if (currentMenu === "ppl") {
+              const pmlMatch = globalPsgPplPml.find(
+                (item) =>
+                  item.ppl.toLowerCase() === context.label.toLowerCase(),
+              );
+              const namaPml = pmlMatch ? pmlMatch.pml : "-";
+              const tambahSubmitNilai =
+                dataContent.tambah_submit && dataContent.tambah_submit[idx]
+                  ? dataContent.tambah_submit[idx].toLocaleString("id-ID")
                   : "0";
 
-              const open =
-                dataContent.open && dataContent.open[idx] !== undefined
-                  ? dataContent.open[idx].toLocaleString("id-ID")
-                  : "0";
-
-              const real =
-                dataContent.realisasi &&
-                dataContent.realisasi[idx] !== undefined
-                  ? dataContent.realisasi[idx].toLocaleString("id-ID")
-                  : "0";
-              const pct = context.parsed.x;
-              const addOne = (dataContent.realisasi[idx] + 1)/dataContent.target[idx] * 100;
-              const kenaikan = 1/dataContent.target[idx] * 100;
-              const draft =
-                dataContent.draft && dataContent.draft[idx] !== undefined
-                  ? dataContent.draft[idx].toLocaleString("id-ID")
-                  : "0";
-
-              if (currentMenu === "ppl") {
-                const pmlMatch = globalPsgPplPml.find(
-                  (item) =>
-                    item.ppl.toLowerCase() === context.label.toLowerCase(),
-                );
-                const namaPml = pmlMatch ? pmlMatch.pml : "-";
-                const tambahSubmitNilai =
-                  dataContent.tambah_submit && dataContent.tambah_submit[idx]
-                    ? dataContent.tambah_submit[idx].toLocaleString("id-ID")
-                    : "0";
-
-                return [
-                  `Progress: ${pct.toLocaleString("id-ID")}%`,
-                  `PML: ${namaPml}`,
-                  `Sudah Didata: ${real}`,
-                  `Belum Didata: ${open}`,
-                  `Draft: ${draft}`,
-                  `Total Muatan: ${tgt}`,
-                  `Tambah Submit: ${tambahSubmitNilai}`,
-                ];
-              } else if (currentMenu === "pml") {
-                const verif = dataContent.verifikasi[idx] || 0;
-                return [
-                  `Progress: ${pct.toLocaleString("id-ID")}%`,
-                  `Terverifikasi: ${verif.toLocaleString("id-ID")}%`,
-                  `Sudah Didata: ${real}`,
-                  `Belum Didata: ${open}`,
-                  `Draft: ${draft}`,
-                  `Total Muatan: ${tgt}`,
-                ];
-              } else if (currentMenu === "sls") {
-                const namaDesa =
-                  dataContent.desa && dataContent.desa[idx]
-                    ? dataContent.desa[idx]
-                    : "-";
-                return [
-                  `Progress: ${pct.toLocaleString("id-ID")}%`,
-                  `Desa: ${namaDesa}`,
-                  ...(pct < 100 ? [
-                    `Tambah 1 Submit: ${addOne == 100 ? addOne + '%' : addOne.toFixed(2).replace('.', ',')}%`,
-                    `Kenaikan: ${kenaikan.toFixed(2).replace('.', ',')}%`
-                  ] : []),
-                  `Sudah Didata: ${real}`,
-                  `Belum Didata: ${open}`,
-                  `Draft: ${draft}`,
-                  `Total Muatan: ${tgt}`,
-                ];
-              } else {
-                return [
-                  `Progress: ${pct.toLocaleString("id-ID")}%`,
-                  `Sudah Didata: ${real}`,
-                  `Belum Didata: ${open}`,
-                  `Draft: ${draft}`,
-                  `Total Muatan: ${tgt}`,
-                ];
-              }
-            },
+              return [
+                `Progress: ${pct.toLocaleString("id-ID")}%`,
+                `PML: ${namaPml}`,
+                `Sudah Didata: ${real}`,
+                `Belum Didata: ${open}`,
+                `Draft: ${draft}`,
+                `Total Muatan: ${tgt}`,
+                `Tambah Submit: ${tambahSubmitNilai}`,
+              ];
+            } else if (currentMenu === "pml") {
+              const verif = dataContent.verifikasi[idx] || 0;
+              return [
+                `Progress: ${pct.toLocaleString("id-ID")}%`,
+                `Terverifikasi: ${verif.toLocaleString("id-ID")}%`,
+                `Sudah Didata: ${real}`,
+                `Belum Didata: ${open}`,
+                `Draft: ${draft}`,
+                `Total Muatan: ${tgt}`,
+              ];
+            } else if (currentMenu === "sls") {
+              const namaDesa =
+                dataContent.desa && dataContent.desa[idx]
+                  ? dataContent.desa[idx]
+                  : "-";
+              return [
+                `Progress: ${pct.toLocaleString("id-ID")}%`,
+                `Desa: ${namaDesa}`,
+                ...(pct < 100
+                  ? [
+                      `Tambah 1 Submit: ${addOne == 100 ? addOne + "%" : addOne.toFixed(2).replace(".", ",")}%`,
+                      `Kenaikan: ${kenaikan.toFixed(2).replace(".", ",")}%`,
+                    ]
+                  : []),
+                `Sudah Didata: ${real}`,
+                `Belum Didata: ${open}`,
+                `Draft: ${draft}`,
+                `Total Muatan: ${tgt}`,
+              ];
+            } else {
+              return [
+                `Progress: ${pct.toLocaleString("id-ID")}%`,
+                `Sudah Didata: ${real}`,
+                `Belum Didata: ${open}`,
+                `Draft: ${draft}`,
+                `Total Muatan: ${tgt}`,
+              ];
+            }
           },
         },
       },
-      scales: {
-        x: {
-          max: 100,
-          grid: { display: false },
-          ticks: {
-            color: textColor,
-            callback: function (value) {
-              return value + "%";
-            },
+    },
+    scales: {
+      x: {
+        max: 100,
+        grid: { display: false },
+        ticks: {
+          color: textColor,
+          callback: function (value) {
+            return value + "%";
           },
         },
-        y: {
-          grid: { display: false },
-          ticks: { color: textColor },
-        },
+      },
+      y: {
+        grid: { display: false },
+        ticks: { color: textColor },
       },
     },
   });
