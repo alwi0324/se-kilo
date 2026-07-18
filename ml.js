@@ -58,6 +58,8 @@ function updateDashboardData(whatData) {
         (nama) => nama.toLowerCase() === selectedPml.toLowerCase(),
       );
 
+      // Jika ketemu, ambil nilai progress dari array data PML asli (misal: data.progress[pmlIdx])
+      // Catatan: Sesuaikan 'globalPmlData.progress' di bawah dengan nama properti array progress di handler PML-mu
       if (
         pmlIdx !== -1 &&
         globalPmlData.progress &&
@@ -65,10 +67,11 @@ function updateDashboardData(whatData) {
       ) {
         const nilaiProgressRaw = globalPmlData.progress[pmlIdx];
 
+        // Format ke "46,28%" (jika data dari Sheets masih berupa angka mentah 46.28)
         progressPmlText =
           typeof nilaiProgressRaw === "number"
             ? nilaiProgressRaw.toFixed(2).replace(".", ",") + "%"
-            : nilaiProgressRaw;
+            : nilaiProgressRaw; // Jika dari Sheets sudah berbentuk teks "46,28%"
       }
     }
 
@@ -269,7 +272,6 @@ function renderChart(whatData) {
   const dataContent = whatData || activeData;
   const isDark = document.documentElement.classList.contains("dark");
   const textColor = isDark ? "#cbd5e1" : "#64748b";
-  const isMobile = window.innerWidth < 768;
   if (!dataContent || !dataContent.progress) return;
   const percentages = dataContent.progress.map((pct) =>
     parseFloat(pct.toFixed(2)),
@@ -299,140 +301,133 @@ function renderChart(whatData) {
       plugins: {
         legend: { display: false },
         datalabels: {
-          display: (context) => context.dataset.data[context.dataIndex] > 0,
+          display: function (context) {
+            const value = context.dataset.data[context.dataIndex];
+            return value > 0;
+          },
+          anchor: "end",
+          align: "start",
+          offset: 3,
+          color: "#000000",
+          font: {
+            weight: "bold",
+            size: 15,
+            family: "monospace",
+          },
+          // Format tampilan agar ditambahkan simbol '%'
+          formatter: (value) => value.toLocaleString("id-ID") + "%",
         },
-        anchor: "end",
-        align: (context) => {
-          const value = context.dataset.data[context.dataIndex];
-          if (isMobile && value < 35) {
-            return "end";
-          }
-          return "start";
-        },
-        offset: 4,
-        color: (context) => {
-          const value = context.dataset.data[context.dataIndex];
-          if (isMobile && value < 35) {
-            return isDark ? "#ffffff" : "#000000";
-          }
-          return "#000000";
-        },
-        font: {
-          weight: "bold",
-          size: isMobile ? 12 : 15,
-          family: "monospace",
-        },
-        formatter: (value) => value.toLocaleString("id-ID") + "%",
-      },
-      tooltip: {
-        backgroundColor: isDark ? "#1e293b" : "#0f172a",
-        titleColor: "#ffffff",
-        bodyColor: "#e2e8f0",
-        borderColor: isDark ? "#475569" : "#334155",
-        borderWidth: 1,
-        callbacks: {
-          label: function (context) {
-            const idx = context.dataIndex;
-            const tgt =
-              dataContent.target && dataContent.target[idx] !== undefined
-                ? dataContent.target[idx].toLocaleString("id-ID")
-                : "0";
-
-            const open =
-              dataContent.open && dataContent.open[idx] !== undefined
-                ? dataContent.open[idx].toLocaleString("id-ID")
-                : "0";
-
-            const real =
-              dataContent.realisasi && dataContent.realisasi[idx] !== undefined
-                ? dataContent.realisasi[idx].toLocaleString("id-ID")
-                : "0";
-            const pct = context.parsed.x;
-            const addOne =
-              ((dataContent.realisasi[idx] + 1) / dataContent.target[idx]) *
-              100;
-            const kenaikan = (1 / dataContent.target[idx]) * 100;
-            const draft =
-              dataContent.draft && dataContent.draft[idx] !== undefined
-                ? dataContent.draft[idx].toLocaleString("id-ID")
-                : "0";
-
-            if (currentMenu === "ppl") {
-              const pmlMatch = globalPsgPplPml.find(
-                (item) =>
-                  item.ppl.toLowerCase() === context.label.toLowerCase(),
-              );
-              const namaPml = pmlMatch ? pmlMatch.pml : "-";
-              const tambahSubmitNilai =
-                dataContent.tambah_submit && dataContent.tambah_submit[idx]
-                  ? dataContent.tambah_submit[idx].toLocaleString("id-ID")
+        tooltip: {
+          backgroundColor: isDark ? "#1e293b" : "#0f172a",
+          titleColor: "#ffffff",
+          bodyColor: "#e2e8f0",
+          borderColor: isDark ? "#475569" : "#334155",
+          borderWidth: 1,
+          callbacks: {
+            label: function (context) {
+              const idx = context.dataIndex;
+              const tgt =
+                dataContent.target && dataContent.target[idx] !== undefined
+                  ? dataContent.target[idx].toLocaleString("id-ID")
                   : "0";
 
-              return [
-                `Progress: ${pct.toLocaleString("id-ID")}%`,
-                `PML: ${namaPml}`,
-                `Sudah Didata: ${real}`,
-                `Belum Didata: ${open}`,
-                `Draft: ${draft}`,
-                `Total Muatan: ${tgt}`,
-                `Tambah Submit: ${tambahSubmitNilai}`,
-              ];
-            } else if (currentMenu === "pml") {
-              const verif = dataContent.verifikasi[idx] || 0;
-              return [
-                `Progress: ${pct.toLocaleString("id-ID")}%`,
-                `Terverifikasi: ${verif.toLocaleString("id-ID")}%`,
-                `Sudah Didata: ${real}`,
-                `Belum Didata: ${open}`,
-                `Draft: ${draft}`,
-                `Total Muatan: ${tgt}`,
-              ];
-            } else if (currentMenu === "sls") {
-              const namaDesa =
-                dataContent.desa && dataContent.desa[idx]
-                  ? dataContent.desa[idx]
-                  : "-";
-              return [
-                `Progress: ${pct.toLocaleString("id-ID")}%`,
-                `Desa: ${namaDesa}`,
-                ...(pct < 100
-                  ? [
-                      `Tambah 1 Submit: ${addOne == 100 ? addOne + "%" : addOne.toFixed(2).replace(".", ",")}%`,
-                      `Kenaikan: ${kenaikan.toFixed(2).replace(".", ",")}%`,
-                    ]
-                  : []),
-                `Sudah Didata: ${real}`,
-                `Belum Didata: ${open}`,
-                `Draft: ${draft}`,
-                `Total Muatan: ${tgt}`,
-              ];
-            } else {
-              return [
-                `Progress: ${pct.toLocaleString("id-ID")}%`,
-                `Sudah Didata: ${real}`,
-                `Belum Didata: ${open}`,
-                `Draft: ${draft}`,
-                `Total Muatan: ${tgt}`,
-              ];
-            }
+              const open =
+                dataContent.open && dataContent.open[idx] !== undefined
+                  ? dataContent.open[idx].toLocaleString("id-ID")
+                  : "0";
+
+              const real =
+                dataContent.realisasi &&
+                dataContent.realisasi[idx] !== undefined
+                  ? dataContent.realisasi[idx].toLocaleString("id-ID")
+                  : "0";
+              const pct = context.parsed.x;
+              const addOne =
+                ((dataContent.realisasi[idx] + 1) / dataContent.target[idx]) *
+                100;
+              const kenaikan = (1 / dataContent.target[idx]) * 100;
+              const draft =
+                dataContent.draft && dataContent.draft[idx] !== undefined
+                  ? dataContent.draft[idx].toLocaleString("id-ID")
+                  : "0";
+
+              if (currentMenu === "ppl") {
+                const pmlMatch = globalPsgPplPml.find(
+                  (item) =>
+                    item.ppl.toLowerCase() === context.label.toLowerCase(),
+                );
+                const namaPml = pmlMatch ? pmlMatch.pml : "-";
+                const tambahSubmitNilai =
+                  dataContent.tambah_submit && dataContent.tambah_submit[idx]
+                    ? dataContent.tambah_submit[idx].toLocaleString("id-ID")
+                    : "0";
+
+                return [
+                  `Progress: ${pct.toLocaleString("id-ID")}%`,
+                  `PML: ${namaPml}`,
+                  `Sudah Didata: ${real}`,
+                  `Belum Didata: ${open}`,
+                  `Draft: ${draft}`,
+                  `Total Muatan: ${tgt}`,
+                  `Tambah Submit: ${tambahSubmitNilai}`,
+                ];
+              } else if (currentMenu === "pml") {
+                const verif = dataContent.verifikasi[idx] || 0;
+                return [
+                  `Progress: ${pct.toLocaleString("id-ID")}%`,
+                  `Terverifikasi: ${verif.toLocaleString("id-ID")}%`,
+                  `Sudah Didata: ${real}`,
+                  `Belum Didata: ${open}`,
+                  `Draft: ${draft}`,
+                  `Total Muatan: ${tgt}`,
+                ];
+              } else if (currentMenu === "sls") {
+                const namaDesa =
+                  dataContent.desa && dataContent.desa[idx]
+                    ? dataContent.desa[idx]
+                    : "-";
+                return [
+                  `Progress: ${pct.toLocaleString("id-ID")}%`,
+                  `Desa: ${namaDesa}`,
+                  ...(pct < 100
+                    ? [
+                        `Tambah 1 Submit: ${addOne == 100 ? "100%" : addOne.toFixed(2).replace(".", ",")}%`,
+                        `Kenaikan: ${kenaikan.toFixed(2).replace(".", ",")}%`,
+                      ]
+                    : []),
+                  `Sudah Didata: ${real}`,
+                  `Belum Didata: ${open}`,
+                  `Draft: ${draft}`,
+                  `Total Muatan: ${tgt}`,
+                ];
+              } else {
+                return [
+                  `Progress: ${pct.toLocaleString("id-ID")}%`,
+                  `Sudah Didata: ${real}`,
+                  `Belum Didata: ${open}`,
+                  `Draft: ${draft}`,
+                  `Total Muatan: ${tgt}`,
+                ];
+              }
+            },
           },
         },
       },
-    },
-    scales: {
-      x: {
-        max: 100,
-        grid: { display: false },
-        ticks: {
-          color: textColor,
-          callback: function (value) {
-            return value + "%";
+      scales: {
+        x: {
+          max: 100,
+          grid: { display: false },
+          ticks: {
+            color: textColor,
+            callback: function (value) {
+              return value + "%";
+            },
           },
         },
-      },
-      y: {
-        grid: { display: false },
-        ticks: { color: textColor },
+        y: {
+          grid: { display: false },
+          ticks: { color: textColor },
+        },
       },
     },
   });
